@@ -8,16 +8,20 @@ The goal is practical: identify influential factors and support earlier, data-dr
 ## Assignment Structure
 
 linear_regression_model/
-|
-|-- summative/
-|   |-- linear_regression/
-|   |   |-- multivariate.ipynb
-|   |
-|   |-- API/
-|   |   |-- .gitkeep
-|   |
-|   |-- FlutterApp/
-|       |-- .gitkeep
+
+│
+
+├── summative/
+
+│   ├── linear_regression/
+
+│   │   ├── multivariate.ipynb
+
+│   ├── API/
+
+ 
+
+│   ├── FlutterApp/ 
 
 Note: Git does not track truly empty folders, so .gitkeep is used only to preserve the required empty directories.
 
@@ -82,21 +86,7 @@ The notebook exports the trained inference assets used by Task 2 API integration
 - The model is sensitive to preprocessing consistency; production inference must apply the same feature order and scaling used during training.
 - Additional validation (cross-validation and subgroup error analysis) can further improve reliability.
 
-## Ethics and Responsible Use
-- Predictions should support teachers, not replace professional judgment.
-- Model outputs should not be used to label or penalize students.
-- Any deployment should include fairness checks across demographic and socioeconomic groups.
-
 ## How to Reproduce
 1. Open summative/linear_regression/multivariate.ipynb.
 2. Run all cells in order.
 3. Review the model comparison table and exported artifact files.
-
-## Submission Checklist
-- Mission and problem clearly stated.
-- Dataset source and description included.
-- Notebook path provided.
-- Preprocessing and modeling pipeline documented.
-- Quantitative results table included.
-- Best model and saved artifacts listed.
-- Folder structure aligned with assignment requirement.
