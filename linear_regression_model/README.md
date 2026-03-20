@@ -5,8 +5,7 @@ My mission is to empower minds through quality education and improve support for
 This project builds a predictive model for exam scores using student study behavior, school context, and home environment variables.
 The goal is practical: identify influential factors and support earlier, data-driven academic intervention.
 
-## Required Assignment Structure
-The repository now matches the required assignment structure:
+## Assignment Structure
 
 linear_regression_model/
 |
