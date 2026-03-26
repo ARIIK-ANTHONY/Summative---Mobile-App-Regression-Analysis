@@ -1,132 +1,177 @@
-# Summative: Student Exam Performance Regression
+# Summative: Mobile App Regression Analysis
 
-## Mission and Problem
-My mission is to empower minds through quality education and improve support for learners who may be at risk of underperforming.
-This project builds a predictive model for exam scores using student study behavior, school context, and home environment variables.
-The goal is practical: identify influential factors and support earlier, data-driven academic intervention.
+This repository contains my full end-to-end project for predicting student exam performance: model training in Jupyter, FastAPI deployment on Render, and a one-page Flutter mobile app that consumes the API.
 
-## Assignment Structure
+I designed this as one connected workflow, not three separate tasks. The notebook finds the most reliable model, the API serves that model with strict validation, and the Flutter app makes it usable in a real prediction interface.
 
-linear_regression_model/
+## Mission and Problem (4 lines)
+My mission is to support earlier academic intervention for students at risk of underperforming.
+I built a regression system that predicts exam score from study habits, school context, and family background factors.
+The focus is not generic house pricing, it is an education-centered use case aligned to learner support.
+The output is used in a mobile app for quick decision support.
 
-│
-
-├── summative/
-
-│   ├── linear_regression/
-
-│   │   ├── multivariate.ipynb
-
-│   ├── API/
-
- 
-
-│   ├── FlutterApp/ 
-
-Note: Git does not track truly empty folders, so .gitkeep is used only to preserve the required empty directories.
-
-## Dataset
+## Dataset (Source + Description)
 - Name: Student Performance Factors
-- Size: 6,607 records, 20 columns
 - Source: Kaggle (lainguyn123)
 - URL: https://www.kaggle.com/datasets/lainguyn123/student-performance-factors
+- Size: 6,607 rows, 20 columns
+- Why this dataset: rich mix of behavioral, school, and socioeconomic variables suitable for regression and feature analysis.
 
-## Notebook
-- Main analysis notebook: summative/linear_regression/multivariate.ipynb
+## Repository Structure
+```text
+linear_regression_model/
+	README.md
+	render.yaml
+	summative/
+		linear_regression/
+			multivariate.ipynb
+			best_model.pkl
+			scaler.pkl
+			feature_names.pkl
+			x_test.csv
+		API/
+			prediction.py
+			requirements.txt
+		FlutterApp/
+			lib/main.dart
+			pubspec.yaml
+```
 
-## Method Summary
-The notebook performs the following pipeline:
+## Task 1: Linear Regression Notebook
+Notebook path: `summative/linear_regression/multivariate.ipynb`
 
-1. Loads and inspects raw data (shape, distributions, nulls, types).
-2. Handles missing data:
-	- Numeric missing values filled with column mean.
-	- Selected categorical missing values filled with column mode before mapping.
-3. Encodes categorical variables into numeric form:
-	- Ordinal mapping for ordered categories (for example, Low/Medium/High).
-	- Binary mapping for yes/no variables.
-4. Uses correlation analysis to remove weak features:
-	- Dropped columns with absolute correlation below 0.05 with target.
-	- Dropped features: Sleep_Hours, Physical_Activity.
-5. Splits data into train and test sets:
-	- 80 percent train, 20 percent test.
-	- Random state 42.
-6. Applies StandardScaler (fit on train only, transform train and test).
-7. Trains and compares three regression models:
-	- LinearRegression
-	- DecisionTreeRegressor (max_depth=8)
-	- RandomForestRegressor (n_estimators=200, max_depth=10)
+I started from data understanding and feature preparation, then compared multiple regressors under the same preprocessing pipeline to choose the best model for deployment.
 
-## Model Performance (Test Set)
-Results from the evaluated notebook run:
+### What is implemented
+- Data loading, inspection, and cleaning.
+- Categorical encoding to numeric values.
+- Feature engineering with correlation-based filtering.
+- Standardization with `StandardScaler`.
+- Model training for:
+	- `LinearRegression`
+	- `DecisionTreeRegressor`
+	- `RandomForestRegressor`
+- Gradient-descent style learning analysis (`SGDRegressor`) with train/test loss tracking.
+- Visualizations including correlation heatmap and model-related plots.
+- Scatter/fit visualization for linear relationship and fitted regression line.
+- Best-model selection by lowest test MSE.
+- One-row test-set prediction using saved model artifacts (Task 2 preparation).
 
+### Model Results (test set)
 | Model | Train MSE | Test MSE | R2 |
 |---|---:|---:|---:|
 | Linear Regression | 4.3934 | 3.2682 | 0.7688 |
 | Decision Tree | 3.9787 | 7.9659 | 0.4364 |
 | Random Forest | 1.4753 | 4.7720 | 0.6624 |
 
-Best model selected by lowest test MSE:
-- regression_model (Linear Regression)
-- Best test MSE: 3.2682
+Best model selected: `LinearRegression` (`regression_model`) by lowest test MSE.
 
-## Saved Artifacts
-The notebook exports the trained inference assets used by Task 2 API integration:
+In short, Linear Regression gave the best generalization on unseen data for this dataset, so it was selected for production inference.
 
-- summative/linear_regression/best_model.pkl
-- summative/linear_regression/scaler.pkl
-- summative/linear_regression/feature_names.pkl
+### Saved Artifacts
+- `summative/linear_regression/best_model.pkl`
+- `summative/linear_regression/scaler.pkl`
+- `summative/linear_regression/feature_names.pkl`
 
-## Key Findings
-- Hours_Studied and Attendance were among the strongest positive predictors of exam score.
-- The linear model generalized better than the tree-based alternatives on unseen test data.
-- Removing weakly related features improved model focus and reduced noise.
+## Task 2: FastAPI Service
+API path: `summative/API/prediction.py`
 
-## Limitations
-- This is observational data, so findings indicate association, not proven causation.
-- The model is sensitive to preprocessing consistency; production inference must apply the same feature order and scaling used during training.
-- Additional validation (cross-validation and subgroup error analysis) can further improve reliability.
+I implemented the API to be deployment-ready and safe for input quality, with explicit datatypes/ranges and a retraining path for model updates.
 
-## How to Reproduce
-1. Open summative/linear_regression/multivariate.ipynb.
+### Features implemented
+- `POST /predict` endpoint for exam score prediction.
+- `POST /retrain` endpoint to retrain model on uploaded CSV data.
+- Strong request validation using Pydantic (`BaseModel`, typed fields, realistic ranges).
+- CORS middleware configured without wildcard by default (`ALLOWED_ORIGINS` env variable).
+- Required libraries included in `requirements.txt` (`fastapi`, `pydantic`, `uvicorn`, etc.).
+
+### Public Deployment (Render)
+- Live API Base URL: https://summative-mobile-app-regression-analysis-2rfp.onrender.com
+- Swagger UI: https://summative-mobile-app-regression-analysis-2rfp.onrender.com/docs
+- Predict endpoint: `POST /predict`
+- Retrain endpoint: `POST /retrain`
+
+### Render Configuration Used
+- Root Directory: `linear_regression_model/summative/API`
+- Build Command: `pip install -r requirements.txt`
+- Start Command: `uvicorn prediction:app --host 0.0.0.0 --port $PORT`
+- Health Check Path: `/`
+- Important env var: `PYTHON_VERSION=3.11.9`
+- Optional env var for browser clients: `ALLOWED_ORIGINS=https://your-frontend-url`
+
+## Task 3: Flutter Mobile App
+Flutter entry: `summative/FlutterApp/lib/main.dart`
+
+The app is intentionally one page to match the brief and make the prediction flow fast to test during demonstration.
+
+### Rubric-relevant implementation
+- Single-page prediction interface.
+- 15 text inputs matching the model variables.
+- `Predict` button triggers API call.
+- Output area displays predicted score or validation/server errors.
+- Input validation and range guidance are shown in the UI.
+- Layout is structured for readability and mobile usability.
+
+### Run the Flutter App
+From `summative/FlutterApp`:
+
+```bash
+flutter pub get
+flutter run --dart-define=API_BASE_URL=https://summative-mobile-app-regression-analysis-2rfp.onrender.com
+```
+
+## Task 4: Video Demo
+YouTube demo link (max 7 min required by brief):
+- TODO: add your final YouTube link here
+
+Video should clearly include:
+- Mobile app prediction flow.
+- Swagger endpoint tests (including datatype/range behavior).
+- Notebook walkthrough and model comparison using loss metrics.
+- Why Linear Regression was selected.
+- Retraining workflow using `/retrain`.
+- Camera on, concise and focused delivery.
+- Direct answers to these questions during the demo:
+	- Is loss high or low, and how can it be reduced further?
+	- Which hyperparameters can improve performance?
+	- How new data updates deployed model performance?
+	- Why CORS middleware was configured this way?
+
+## Reproduce Locally
+### 1. Notebook workflow
+1. Open `summative/linear_regression/multivariate.ipynb`.
 2. Run all cells in order.
-3. Review the model comparison table and exported artifact files.
+3. Confirm model metrics and artifact export.
 
-## API Deployment (Render)
-Deploy the FastAPI app from the API folder as a Render Web Service.
+### 2. API local run
+From `summative/API`:
 
-Build Command:
-
+```bash
 pip install -r requirements.txt
+python -m uvicorn prediction:app --host 127.0.0.1 --port 8001 --reload
+```
 
-Start Command:
+Docs: `http://127.0.0.1:8001/docs`
 
-uvicorn prediction:app --host 0.0.0.0 --port $PORT
+### 3. Flutter local run
+From `summative/FlutterApp`:
 
-Root Directory:
+```bash
+flutter pub get
+flutter run --dart-define=API_BASE_URL=http://127.0.0.1:8001
+```
 
-summative/API
+## Submission Essentials
+- Mission and problem statement included.
+- Dataset source and link included.
+- Public API and Swagger links included.
+- Mobile app run instructions included.
+- Add your YouTube demo link before final submission.
 
-After deployment, your Swagger UI should be publicly reachable at:
-
-https://<your-render-service>.onrender.com/docs
-
-## Public Endpoint (Replace With Your Live URL)
-- API Base URL: https://<your-render-service>.onrender.com
-- Swagger URL: https://<your-render-service>.onrender.com/docs
-- Prediction Endpoint: POST https://<your-render-service>.onrender.com/predict
-- Retrain Endpoint: POST https://<your-render-service>.onrender.com/retrain
-
-## Flutter App Configuration (Use Render URL)
-Run the mobile app with your hosted API URL:
-
-flutter run --dart-define=API_BASE_URL=https://<your-render-service>.onrender.com
-
-Notes:
-- The app defaults to emulator localhost bridge only when API_BASE_URL is not provided.
-- For submission, use the Render URL to avoid running a local backend.
-
-## Submission Checklist
-- GitHub repo includes notebook, API, and Flutter code.
-- README includes mission/problem description (max 4 lines), dataset source, public Swagger URL, and video link.
-- Public API is testable in Swagger UI.
-- Video shows: mobile prediction flow, Swagger tests, model comparison/loss discussion, retraining workflow.
+## Final Mile to 43/43
+- Keep the video focused on demo evidence, not project history.
+- Show mobile prediction within the opening minutes.
+- In Swagger, test both valid and invalid inputs to prove datatype/range enforcement.
+- Show exactly where the Flutter app calls the API.
+- Explain model comparison with the reported loss metrics and justify model choice.
+- Demonstrate retraining endpoint behavior with a sample file.
