@@ -90,3 +90,43 @@ The notebook exports the trained inference assets used by Task 2 API integration
 1. Open summative/linear_regression/multivariate.ipynb.
 2. Run all cells in order.
 3. Review the model comparison table and exported artifact files.
+
+## API Deployment (Render)
+Deploy the FastAPI app from the API folder as a Render Web Service.
+
+Build Command:
+
+pip install -r requirements.txt
+
+Start Command:
+
+uvicorn prediction:app --host 0.0.0.0 --port $PORT
+
+Root Directory:
+
+summative/API
+
+After deployment, your Swagger UI should be publicly reachable at:
+
+https://<your-render-service>.onrender.com/docs
+
+## Public Endpoint (Replace With Your Live URL)
+- API Base URL: https://<your-render-service>.onrender.com
+- Swagger URL: https://<your-render-service>.onrender.com/docs
+- Prediction Endpoint: POST https://<your-render-service>.onrender.com/predict
+- Retrain Endpoint: POST https://<your-render-service>.onrender.com/retrain
+
+## Flutter App Configuration (Use Render URL)
+Run the mobile app with your hosted API URL:
+
+flutter run --dart-define=API_BASE_URL=https://<your-render-service>.onrender.com
+
+Notes:
+- The app defaults to emulator localhost bridge only when API_BASE_URL is not provided.
+- For submission, use the Render URL to avoid running a local backend.
+
+## Submission Checklist
+- GitHub repo includes notebook, API, and Flutter code.
+- README includes mission/problem description (max 4 lines), dataset source, public Swagger URL, and video link.
+- Public API is testable in Swagger UI.
+- Video shows: mobile prediction flow, Swagger tests, model comparison/loss discussion, retraining workflow.
