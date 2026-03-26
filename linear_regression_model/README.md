@@ -160,18 +160,3 @@ From `summative/FlutterApp`:
 flutter pub get
 flutter run --dart-define=API_BASE_URL=http://127.0.0.1:8001
 ```
-
-## Submission Essentials
-- Mission and problem statement included.
-- Dataset source and link included.
-- Public API and Swagger links included.
-- Mobile app run instructions included.
-- Add your YouTube demo link before final submission.
-
-## Final Mile to 43/43
-- Keep the video focused on demo evidence, not project history.
-- Show mobile prediction within the opening minutes.
-- In Swagger, test both valid and invalid inputs to prove datatype/range enforcement.
-- Show exactly where the Flutter app calls the API.
-- Explain model comparison with the reported loss metrics and justify model choice.
-- Demonstrate retraining endpoint behavior with a sample file.
