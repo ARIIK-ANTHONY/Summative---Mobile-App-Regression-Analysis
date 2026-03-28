@@ -93,38 +93,16 @@ I implemented the API to be deployment-ready and safe for input quality, with ex
 - CORS middleware configured without wildcard by default (`ALLOWED_ORIGINS` env variable).
 - Required libraries included in `requirements.txt` (`fastapi`, `pydantic`, `uvicorn`, etc.).
 
-**Example retrain usage:**
-You can retrain the model by uploading a new CSV file via the `/retrain` endpoint in Swagger UI or with curl:
-```bash
-curl -X POST "https://summative-mobile-app-regression-analysis-2rfp.onrender.com/retrain" -F "file=@your_data.csv"
-```
-
 ### Public Deployment (Render)
 - Live API Base URL: https://summative-mobile-app-regression-analysis-2rfp.onrender.com
 - Swagger UI: https://summative-mobile-app-regression-analysis-2rfp.onrender.com/docs
 - Predict endpoint: `POST /predict`
 - Retrain endpoint: `POST /retrain`
 
-### Render Configuration Used
-- Root Directory: `linear_regression_model/summative/API`
-- Build Command: `pip install -r requirements.txt`
-- Start Command: `uvicorn prediction:app --host 0.0.0.0 --port $PORT`
-- Health Check Path: `/`
-- Important env var: `PYTHON_VERSION=3.11.9`
-- Optional env var for browser clients: `ALLOWED_ORIGINS=https://your-frontend-url`
-
 ## Task 3: Flutter Mobile App
 Flutter entry: `summative/FlutterApp/lib/main.dart`
 
 The app is intentionally one page to match the brief and make the prediction flow fast to test during demonstration.
-
-### Rubric-relevant implementation
-- Single-page prediction interface.
-- 15 text inputs matching the model variables.
-- `Predict` button triggers API call.
-- Output area displays predicted score or validation/server errors.
-- Input validation and range guidance are shown in the UI.
-- Layout is structured for readability and mobile usability.
 
 
 ### Run the Flutter App
@@ -147,18 +125,6 @@ flutter run --dart-define=API_BASE_URL=http://127.0.0.1:8001
 YouTube demo link (max 7 min required by brief):
 - https://www.youtube.com/watch?si=D3i6BAdyDPd6pMMF&v=FAjqIMxgXLM&feature=youtu.be
 
-Video should clearly include:
-- Mobile app prediction flow.
-- Swagger endpoint tests (including datatype/range behavior).
-- Notebook walkthrough and model comparison using loss metrics.
-- Why Linear Regression was selected.
-- Retraining workflow using `/retrain`.
-- Camera on, concise and focused delivery.
-- Direct answers to these questions during the demo:
-	- Is loss high or low, and how can it be reduced further?
-	- Which hyperparameters can improve performance?
-	- How new data updates deployed model performance?
-	- Why CORS middleware was configured this way?
 
 ## Reproduce Locally
 ### 1. Notebook workflow
@@ -190,5 +156,3 @@ This command ensures the Flutter app connects to your locally running FastAPI se
 ```bash
 flutter run --dart-define=API_BASE_URL=https://summative-mobile-app-regression-analysis-2rfp.onrender.com
 ```
-
-Always use the --dart-define flag to specify the API endpoint for local or deployed testing.
