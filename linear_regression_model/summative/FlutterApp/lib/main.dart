@@ -1,8 +1,8 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+// App entry point.
 void main() {
   runApp(const MyApp());
 }
@@ -63,11 +63,14 @@ class PredictionDashboardPage extends StatefulWidget {
 }
 
 class _PredictionDashboardPageState extends State<PredictionDashboardPage> {
+  // Deployment-friendly API config: inject with --dart-define at runtime.
   static const String _apiBaseUrl = String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: '',
+    defaultValue:
+        'https://summative-mobile-app-regression-analysis-2rfp.onrender.com',
   );
 
+  // Build the prediction endpoint from the configured base URL.
   static String get apiUrl {
     final normalizedBase = _apiBaseUrl.endsWith('/')
         ? _apiBaseUrl.substring(0, _apiBaseUrl.length - 1)
@@ -98,6 +101,7 @@ class _PredictionDashboardPageState extends State<PredictionDashboardPage> {
   bool _isError = false;
   double? _predictedScore;
 
+  // Controller cleanup to prevent memory leaks.
   @override
   void dispose() {
     _hoursStudied.dispose();
@@ -118,6 +122,7 @@ class _PredictionDashboardPageState extends State<PredictionDashboardPage> {
     super.dispose();
   }
 
+  // Tracks form completion for the dashboard card.
   int get _filledCount {
     final controllers = [
       _hoursStudied,
@@ -139,15 +144,8 @@ class _PredictionDashboardPageState extends State<PredictionDashboardPage> {
     return controllers.where((c) => c.text.trim().isNotEmpty).length;
   }
 
+  // Validates input, calls the API, and updates UI state with the result.
   Future<void> _predict() async {
-    if (_apiBaseUrl.trim().isEmpty) {
-      setState(() {
-        _result = 'API URL not configured. Run with --dart-define=API_BASE_URL=...';
-        _isError = true;
-      });
-      return;
-    }
-
     if (!_formKey.currentState!.validate()) return;
 
     setState(() {
@@ -210,6 +208,7 @@ class _PredictionDashboardPageState extends State<PredictionDashboardPage> {
     }
   }
 
+  // Reusable numeric input field with per-feature validation rules.
   Widget _field({
     required TextEditingController controller,
     required String label,
@@ -243,6 +242,7 @@ class _PredictionDashboardPageState extends State<PredictionDashboardPage> {
     );
   }
 
+  // Small metric cards shown in the horizontal dashboard row.
   Widget _dashboardCard({
     required String title,
     required String value,
@@ -288,6 +288,7 @@ class _PredictionDashboardPageState extends State<PredictionDashboardPage> {
     );
   }
 
+  // Reusable section wrapper used for grouped inputs.
   Widget _sectionCard({
     required String title,
     required IconData icon,
@@ -339,6 +340,7 @@ class _PredictionDashboardPageState extends State<PredictionDashboardPage> {
     );
   }
 
+  // Main page layout.
   @override
   Widget build(BuildContext context) {
     final completion = '$_filledCount/15';
