@@ -120,9 +120,10 @@ flutter pub get
 flutter run --dart-define=API_BASE_URL=https://summative-mobile-app-regression-analysis-2rfp.onrender.com
 ```
 
+
 ## Task 4: Video Demo
 YouTube demo link (max 7 min required by brief):
-- TODO: add your final YouTube link here
+- https://www.youtube.com/watch?si=D3i6BAdyDPd6pMMF&v=FAjqIMxgXLM&feature=youtu.be
 
 Video should clearly include:
 - Mobile app prediction flow.
