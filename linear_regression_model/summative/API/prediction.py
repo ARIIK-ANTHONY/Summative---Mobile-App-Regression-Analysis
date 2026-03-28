@@ -12,9 +12,9 @@ from sklearn.preprocessing import StandardScaler
 
 
 # ----------------------------------------------------------------
-# load the three files saved from the notebook
-# best_model.pkl, scaler.pkl, feature_names.pkl
-# without all three the predictions will be wrong
+# Load model artifacts exported from my notebook training workflow.
+# These files (best_model.pkl, scaler.pkl, feature_names.pkl) are essential for making accurate predictions.
+# If any are missing, the API will not function as intended for student exam score prediction.
 # ----------------------------------------------------------------
 BASE_DIR = Path(__file__).resolve().parent
 MODEL_DIR = BASE_DIR.parent / "linear_regression"
@@ -28,7 +28,8 @@ with open(FEATURE_NAMES_PATH, "rb") as f: feature_names = pickle.load(f)
 
 
 # ----------------------------------------------------------------
-# create the app
+# Create the FastAPI app for student exam score prediction.
+# This API is part of my mission to support earlier academic intervention using data-driven insights.
 # ----------------------------------------------------------------
 app = FastAPI(
     title="Student Exam Score Predictor",
@@ -42,10 +43,9 @@ app = FastAPI(
 
 
 # ----------------------------------------------------------------
-# CORS middleware
-# not using wildcard * because that would allow any site to call
-# the API which is a security risk
-# allowing only the origins that actually need access
+# CORS middleware configuration
+# I do NOT use wildcard * for security reasons. Only trusted origins can access the API.
+# This ensures only my mobile app or approved frontends can make requests, protecting student data.
 # ----------------------------------------------------------------
 allowed_origins = [
     origin.strip()
@@ -63,9 +63,9 @@ app.add_middleware(
 
 
 # ----------------------------------------------------------------
-# pydantic input model
-# every field has a type and a realistic range from the dataset
-# fastapi returns 422 automatically if a value is out of range
+# Pydantic input model for student features
+# Each field matches a real variable from my dataset and enforces realistic ranges.
+# FastAPI will automatically reject requests with invalid or out-of-range values, ensuring data quality.
 # ----------------------------------------------------------------
 class StudentInput(BaseModel):
     Hours_Studied: int = Field(
@@ -153,6 +153,7 @@ class StudentInput(BaseModel):
 
 # ----------------------------------------------------------------
 # GET / health check
+# Simple endpoint to confirm the API is running and provide a link to Swagger docs.
 # ----------------------------------------------------------------
 @app.get("/")
 def root():
@@ -164,8 +165,8 @@ def root():
 
 # ----------------------------------------------------------------
 # POST /predict
-# takes one student record, scales it the same way training data
-# was scaled, returns the predicted exam score
+# Receives a single student's data, applies the same scaling as during training,
+# and returns the predicted exam score (0-100). Used by my mobile app for real-time predictions.
 # ----------------------------------------------------------------
 @app.post("/predict")
 def predict(student: StudentInput):
@@ -186,9 +187,9 @@ def predict(student: StudentInput):
 
 # ----------------------------------------------------------------
 # POST /retrain
-# upload a new CSV to retrain the model on fresh data
-# the CSV must have the same columns as the original dataset
-# this is how the model stays up to date when new data comes in
+# Upload a new CSV file to retrain the model on fresh student data.
+# The CSV must match the original dataset's columns. This lets me update the deployed model
+# as new data is collected, keeping predictions relevant and accurate for my mission.
 # ----------------------------------------------------------------
 @app.post("/retrain")
 async def retrain(file: UploadFile = File(...)):
