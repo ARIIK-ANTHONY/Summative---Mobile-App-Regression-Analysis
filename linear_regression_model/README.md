@@ -17,6 +17,13 @@ The output is used in a mobile app for quick decision support.
 - Size: 6,607 rows, 20 columns
 - Why this dataset: rich mix of behavioral, school, and socioeconomic variables suitable for regression and feature analysis.
 
+## Key Visualizations
+See the following visualizations in [multivariate.ipynb](summative/linear_regression/multivariate.ipynb):
+- **Correlation Heatmap:** Shows relationships between all variables and helps select features.
+- **Score Distribution Histogram:** Reveals the spread and skew of the target variable.
+
+These plots directly influenced feature selection and model performance.
+
 ## Repository Structure
 ```text
 linear_regression_model/
@@ -57,6 +64,7 @@ I started from data understanding and feature preparation, then compared multipl
 - Best-model selection by lowest test MSE.
 - One-row test-set prediction using saved model artifacts (Task 2 preparation).
 
+
 ### Model Results (test set)
 | Model | Train MSE | Test MSE | R2 |
 |---|---:|---:|---:|
@@ -64,9 +72,8 @@ I started from data understanding and feature preparation, then compared multipl
 | Decision Tree | 3.9787 | 7.9659 | 0.4364 |
 | Random Forest | 1.4753 | 4.7720 | 0.6624 |
 
-Best model selected: `LinearRegression` (`regression_model`) by lowest test MSE.
-
-In short, Linear Regression gave the best generalization on unseen data for this dataset, so it was selected for production inference.
+**Model Justification:**
+Linear Regression was selected for deployment because it achieved the lowest test MSE and highest R², indicating the best generalization to unseen data. The dataset's relationships were mostly linear, making this model the most appropriate and interpretable for the problem context.
 
 ### Saved Artifacts
 - `summative/linear_regression/best_model.pkl`
@@ -78,12 +85,19 @@ API path: `summative/API/prediction.py`
 
 I implemented the API to be deployment-ready and safe for input quality, with explicit datatypes/ranges and a retraining path for model updates.
 
+
 ### Features implemented
 - `POST /predict` endpoint for exam score prediction.
 - `POST /retrain` endpoint to retrain model on uploaded CSV data.
 - Strong request validation using Pydantic (`BaseModel`, typed fields, realistic ranges).
 - CORS middleware configured without wildcard by default (`ALLOWED_ORIGINS` env variable).
 - Required libraries included in `requirements.txt` (`fastapi`, `pydantic`, `uvicorn`, etc.).
+
+**Example retrain usage:**
+You can retrain the model by uploading a new CSV file via the `/retrain` endpoint in Swagger UI or with curl:
+```bash
+curl -X POST "https://summative-mobile-app-regression-analysis-2rfp.onrender.com/retrain" -F "file=@your_data.csv"
+```
 
 ### Public Deployment (Render)
 - Live API Base URL: https://summative-mobile-app-regression-analysis-2rfp.onrender.com
@@ -112,6 +126,7 @@ The app is intentionally one page to match the brief and make the prediction flo
 - Input validation and range guidance are shown in the UI.
 - Layout is structured for readability and mobile usability.
 
+
 ### Run the Flutter App
 From `summative/FlutterApp`:
 
@@ -119,6 +134,13 @@ From `summative/FlutterApp`:
 flutter pub get
 flutter run --dart-define=API_BASE_URL=https://summative-mobile-app-regression-analysis-2rfp.onrender.com
 ```
+
+Or for local API testing:
+
+```bash
+flutter run --dart-define=API_BASE_URL=http://127.0.0.1:8001
+```
+
 
 
 ## Task 4: Video Demo
@@ -154,6 +176,7 @@ python -m uvicorn prediction:app --host 127.0.0.1 --port 8001 --reload
 
 Docs: `http://127.0.0.1:8001/docs`
 
+
 ### 3. Flutter local run
 From `summative/FlutterApp`:
 
@@ -161,3 +184,11 @@ From `summative/FlutterApp`:
 flutter pub get
 flutter run --dart-define=API_BASE_URL=http://127.0.0.1:8001
 ```
+
+This command ensures the Flutter app connects to your locally running FastAPI server. If you want to use the deployed API instead, set:
+
+```bash
+flutter run --dart-define=API_BASE_URL=https://summative-mobile-app-regression-analysis-2rfp.onrender.com
+```
+
+Always use the --dart-define flag to specify the API endpoint for local or deployed testing.
